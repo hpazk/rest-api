@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/hpazk/rest-api/helper"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -47,24 +48,18 @@ func main() {
 		user := new(User)
 
 		if err := c.Bind(user); err != nil {
-			response := M{"message": "error"}
+			response := helper.ResponseFormatter(http.StatusBadRequest, "error", "invalid request", nil)
 
 			return c.JSON(http.StatusBadRequest, response)
 		}
 
 		if err := c.Validate(user); err != nil {
-			response := M{
-				"message": "error",
-				"errors":  err.Error(),
-			}
+			response := helper.ResponseFormatter(http.StatusBadRequest, "error", "invalid request", err.Error())
 
 			return c.JSON(http.StatusBadRequest, response)
 		}
 
-		response := M{
-			"message": "success",
-			"data":    user,
-		}
+		response := helper.ResponseFormatter(http.StatusOK, "success", "user succesfully registered", user)
 
 		return c.JSON(http.StatusOK, response)
 	})
