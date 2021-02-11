@@ -10,8 +10,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-type M map[string]interface{}
-
 type User struct {
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
@@ -48,13 +46,16 @@ func main() {
 		user := new(User)
 
 		if err := c.Bind(user); err != nil {
+
 			response := helper.ResponseFormatter(http.StatusBadRequest, "error", "invalid request", nil)
 
 			return c.JSON(http.StatusBadRequest, response)
 		}
 
 		if err := c.Validate(user); err != nil {
-			response := helper.ResponseFormatter(http.StatusBadRequest, "error", "invalid request", err.Error())
+			errorFormatter := helper.ErrorFormatter(err)
+			errorMessage := helper.M{"errors": errorFormatter}
+			response := helper.ResponseFormatter(http.StatusBadRequest, "error", errorMessage, nil)
 
 			return c.JSON(http.StatusBadRequest, response)
 		}
