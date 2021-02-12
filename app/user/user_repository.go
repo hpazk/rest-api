@@ -1,5 +1,7 @@
 package user
 
+import "fmt"
+
 type UsersStorage []interface{}
 
 var users UsersStorage
@@ -18,6 +20,8 @@ func NewRepository(users *UsersStorage) *repository {
 
 func (r *repository) InsertUser(user User) User {
 	users = append(users, user)
+
+	fmt.Println(users)
 
 	return user
 }

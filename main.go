@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/hpazk/rest-api/app/user"
+	"github.com/hpazk/rest-api/routes"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -35,11 +35,9 @@ func main() {
 
 	// 	return c.JSON(http.StatusOK, response)
 	// })
-	userRepo := user.NewRepository(&user.UsersStorage{})
-	userService := user.NewServices(userRepo)
-	userHandler := user.NewHandler(userService)
 
-	e.POST("/users", userHandler.UserRegistration)
+	// e.POST("/users", userHandler.UserRegistration)
+	routes.DefineApiRoutes(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
