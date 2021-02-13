@@ -8,7 +8,6 @@ type DbConnection struct {
 	DbName   string
 	Username string
 	Password string
-	SslMode  string
 }
 
 func DbConfig() DbConnection {
@@ -18,7 +17,6 @@ func DbConfig() DbConnection {
 		DbName:   os.Getenv("DB_NAME"),
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
-		SslMode:  os.Getenv("DB_SSL_MODE"),
 	}
 
 	return dbConfig

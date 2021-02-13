@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/hpazk/rest-api/routes"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -22,11 +20,6 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 
 func main() {
 	fmt.Println("running...")
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("error loading .env file")
-	}
-
 	e := echo.New()
 
 	e.Validator = &CustomValidator{validator: validator.New()}
