@@ -30,13 +30,6 @@ func main() {
 
 	e.Pre(middleware.RemoveTrailingSlash())
 
-	// e.GET("/users", func(c echo.Context) error {
-	// 	response := M{"message": "success"}
-
-	// 	return c.JSON(http.StatusOK, response)
-	// })
-
-	// e.POST("/users", userHandler.UserRegistration)
 	routes.DefineApiRoutes(e)
 
 	e.Logger.Fatal(e.Start(":8080"))

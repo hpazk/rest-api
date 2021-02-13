@@ -3,16 +3,18 @@ package user
 import (
 	"net/http"
 
+	"github.com/hpazk/rest-api/auth"
 	"github.com/hpazk/rest-api/helper"
 	"github.com/labstack/echo/v4"
 )
 
 type userHandler struct {
 	userService Services
+	authService auth.AuthService
 }
 
-func NewHandler(userService Services) *userHandler {
-	return &userHandler{userService}
+func NewHandler(userService Services, authService auth.AuthService) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) UserRegistration(c echo.Context) error {
@@ -49,7 +51,14 @@ func (h *userHandler) UserRegistration(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	userData := UserResponseFormatter(newUser)
+	auth_token, err := h.authService.GetAccessToken(newUser.ID)
+	if err != nil {
+		response := helper.ResponseFormatter(http.StatusInternalServerError, "error", err.Error(), nil)
+
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+
+	userData := UserResponseFormatter(newUser, auth_token)
 
 	response := helper.ResponseFormatter(http.StatusOK, "success", "user succesfully registered", userData)
 
@@ -81,10 +90,23 @@ func (h *userHandler) UserLogin(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, response)
 	}
 
-	userData := UserResponseFormatter(userAuth)
+	auth_token, err := h.authService.GetAccessToken(userAuth.ID)
+	if err != nil {
+		response := helper.ResponseFormatter(http.StatusInternalServerError, "error", err.Error(), nil)
+
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+
+	userData := UserResponseFormatter(userAuth, auth_token)
 
 	response := helper.ResponseFormatter(http.StatusOK, "success", "user authenticated", userData)
 
 	return c.JSON(http.StatusOK, response)
 
+}
+
+func (h *userHandler) SecretResource(c echo.Context) error {
+	response := helper.M{"message": "this is secret route"}
+
+	return c.JSON(http.StatusOK, response)
 }

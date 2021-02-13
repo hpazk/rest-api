@@ -1,8 +1,10 @@
 package user
 
 import (
+	"github.com/hpazk/rest-api/auth"
 	"github.com/hpazk/rest-api/database"
 	"github.com/hpazk/rest-api/helper"
+	"github.com/hpazk/rest-api/middleware"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,7 +15,9 @@ func (r UserRoutes) Route() []helper.Route {
 	db.AutoMigrate(User{})
 	userRepo := NewRepository(db)
 	userService := NewServices(userRepo)
-	userHandler := NewHandler(userService)
+	authService := auth.NewAuthService()
+
+	userHandler := NewHandler(userService, authService)
 
 	return []helper.Route{
 		{
@@ -25,6 +29,12 @@ func (r UserRoutes) Route() []helper.Route {
 			Method:  echo.POST,
 			Path:    "/login",
 			Handler: userHandler.UserLogin,
+		},
+		{
+			Method:     echo.GET,
+			Path:       "/secret",
+			Handler:    userHandler.SecretResource,
+			Middleware: []echo.MiddlewareFunc{middleware.JwtMiddleWare()},
 		},
 	}
 }
